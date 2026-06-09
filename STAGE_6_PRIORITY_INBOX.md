@@ -24,7 +24,7 @@ Engagement = is_read ? 0 : 100 (unread = more important)
 interface Notification {
   id: string;
   userId: string;
-  type: 'Placement' | 'Result' | 'Event';
+  type: "Placement" | "Result" | "Event";
   message: string;
   isRead: boolean;
   createdAt: Date;
@@ -33,42 +33,47 @@ interface Notification {
 
 class PriorityInbox {
   private typeWeights = {
-    'Placement': 100,
-    'Result': 80,
-    'Event': 60
+    Placement: 100,
+    Result: 80,
+    Event: 60,
   };
 
   private calculatePriorityScore(notification: Notification): number {
     const typeScore = this.typeWeights[notification.type];
     const daysOld = Math.floor(
-      (Date.now() - notification.createdAt.getTime()) / (1000 * 60 * 60 * 24)
+      (Date.now() - notification.createdAt.getTime()) / (1000 * 60 * 60 * 24),
     );
     const recencyScore = 100 / (1 + daysOld);
     const engagementScore = notification.isRead ? 0 : 100;
 
-    return (typeScore * 0.5) + (recencyScore * 0.3) + (engagementScore * 0.2);
+    return typeScore * 0.5 + recencyScore * 0.3 + engagementScore * 0.2;
   }
 
-  async getTopPriorityNotifications(userId: string, limit: number = 10): Promise<Notification[]> {
+  async getTopPriorityNotifications(
+    userId: string,
+    limit: number = 10,
+  ): Promise<Notification[]> {
     const notifications = await this.fetchUserNotifications(userId);
 
-    const scored = notifications.map(notif => ({
+    const scored = notifications.map((notif) => ({
       ...notif,
-      priority: this.calculatePriorityScore(notif)
+      priority: this.calculatePriorityScore(notif),
     }));
 
     const sorted = scored.sort((a, b) => b.priority - a.priority);
     return sorted.slice(0, limit);
   }
 
-  private async fetchUserNotifications(userId: string): Promise<Notification[]> {
+  private async fetchUserNotifications(
+    userId: string,
+  ): Promise<Notification[]> {
     const query = `
       SELECT id, userId, type, message, isRead, createdAt
       FROM notifications
       WHERE userId = $1 AND deletedAt IS NULL
       ORDER BY createdAt DESC
     `;
-    
+
     return await db.query(query, [userId]);
   }
 }
@@ -99,21 +104,21 @@ class PriorityInbox:
         'Result': 80,
         'Event': 60
     }
-    
+
     def calculate_priority_score(self, notification: Notification) -> float:
         """Calculate priority score (0-100 scale)"""
         type_score = self.TYPE_WEIGHTS.get(notification.type, 0)
         days_old = (datetime.now() - notification.created_at).days
         recency_score = 100 / (1 + days_old)
         engagement_score = 100 if not notification.is_read else 0
-        
+
         priority = (type_score * 0.5) + (recency_score * 0.3) + (engagement_score * 0.2)
         return round(priority, 2)
-    
+
     def get_top_priority_notifications(self, user_id: str, limit: int = 10) -> list:
         """Get top N priority notifications for user"""
         notifications = self.fetch_user_notifications(user_id)
-        
+
         scored = [
             {
                 'notification': notif,
@@ -121,9 +126,9 @@ class PriorityInbox:
             }
             for notif in notifications
         ]
-        
+
         sorted_notifs = sorted(scored, key=lambda x: x['score'], reverse=True)
-        
+
         return [
             {
                 'id': item['notification'].id,
@@ -181,7 +186,7 @@ func (pi *PriorityInbox) CalculatePriorityScore(notif Notification) float64 {
     typeScore := pi.typeWeights[notif.Type]
     daysOld := int(time.Since(notif.CreatedAt).Hours() / 24)
     recencyScore := 100.0 / (1.0 + float64(daysOld))
-    
+
     engagementScore := 0.0
     if !notif.IsRead {
         engagementScore = 100
@@ -239,18 +244,21 @@ func (pi *PriorityInbox) GetTopPriorityNotifications(userID string, limit int) (
 ## Priority Scoring Examples
 
 ### Example 1: Placement Notification (1 day old, unread)
+
 - Type Score: 100 × 0.5 = 50
 - Recency: 100/(1+1) × 0.3 = 15
 - Engagement: 100 × 0.2 = 20
 - **Total: 85** ⭐ TOP PRIORITY
 
 ### Example 2: Result Notification (3 days old, read)
+
 - Type Score: 80 × 0.5 = 40
 - Recency: 100/(1+3) × 0.3 = 6
 - Engagement: 0 × 0.2 = 0
-- **Total: 46** 
+- **Total: 46**
 
 ### Example 3: Event Notification (7 days old, unread)
+
 - Type Score: 60 × 0.5 = 30
 - Recency: 100/(1+7) × 0.3 = 3.75
 - Engagement: 100 × 0.2 = 20

@@ -13,15 +13,16 @@ Response Time: 5-10ms
 ```
 
 **Implementation:**
+
 ```python
 def get_user_notifications(user_id, page=1, limit=20):
     cache_key = f"notifications:{user_id}:page:{page}"
-    
+
     # Try cache first (5-10ms)
     cached = redis.get(cache_key)
     if cached:
         return json.loads(cached)
-    
+
     # Cache miss - query DB (200-500ms)
     notifications = db.query(f"""
         SELECT id, type, title, message, priority, category, created_at, is_read
@@ -30,13 +31,14 @@ def get_user_notifications(user_id, page=1, limit=20):
         ORDER BY created_at DESC
         LIMIT {limit} OFFSET {(page-1)*limit}
     """)
-    
+
     # Store in cache (24 hour TTL)
     redis.setex(cache_key, 86400, json.dumps(notifications))
     return notifications
 ```
 
 **Benefits:**
+
 - Reduces DB queries by 85-90%
 - Response time: 5-10ms (vs 200-500ms)
 - Handles 10x traffic spikes
@@ -53,6 +55,7 @@ Architecture:
 ```
 
 **Load Distribution:**
+
 - Primary handles all writes
 - 3-5 Replicas handle notifications queries
 - HAProxy round-robin routing
@@ -64,7 +67,7 @@ Architecture:
 
 ```sql
 CREATE MATERIALIZED VIEW notifications_daily_stats AS
-SELECT 
+SELECT
     user_id,
     DATE(created_at) as date,
     COUNT(*) as total,
@@ -102,9 +105,9 @@ const [notifications, setNotifications] = useState([]);
 const [page, setPage] = useState(1);
 
 const loadMore = async () => {
-    const data = await fetch(`/api/notifications?page=${page + 1}&limit=20`);
-    setNotifications([...notifications, ...data]);
-    setPage(page + 1);
+  const data = await fetch(`/api/notifications?page=${page + 1}&limit=20`);
+  setNotifications([...notifications, ...data]);
+  setPage(page + 1);
 };
 ```
 
@@ -121,6 +124,7 @@ PgBouncer Configuration:
 ```
 
 **Benefits:**
+
 - Prevents connection exhaustion
 - Reduces query queue time
 - Distributes load across connections
@@ -135,6 +139,7 @@ PgBouncer Configuration:
 4. **Tier 4**: Aggressive pagination + lazy loading
 
 ### Expected Results:
+
 - DB load reduced by 95%
 - Response time: <50ms average
 - Handles 50,000 concurrent students

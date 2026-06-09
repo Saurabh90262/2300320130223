@@ -11,14 +11,18 @@ This repository contains the complete implementation of a scalable, production-r
 ## 🎯 Deliverables Summary
 
 ### Stage 1: REST API Design ✅
+
 **File**: `STAGE_1_REST_API_DESIGN.md`
+
 - 7 core actions identified (Create, Retrieve, Read, Delete, Preferences, Real-time)
 - 9 REST API endpoints with complete request/response schemas
 - WebSocket events for real-time notifications
 - Error handling (400, 401, 403, 404, 500)
 
 ### Stage 2: Database Schema Design ✅
+
 **File**: `STAGE_2_DATABASE_SCHEMA.md`
+
 - PostgreSQL selected for ACID compliance and scalability
 - 2 core tables: `notifications` and `notification_preferences`
 - 8 strategic indexes optimized for query patterns
@@ -26,7 +30,9 @@ This repository contains the complete implementation of a scalable, production-r
 - Archival and caching strategy
 
 ### Stage 3: Query Optimization & Indexing ✅
+
 **File**: `STAGE_3_QUERY_OPTIMIZATION.md`
+
 - Problem analysis: Slow queries (2-5 seconds)
 - Optimized query reducing response time to 50-100ms (20-100x improvement)
 - 4 strategic composite indexes (not index explosion)
@@ -34,7 +40,9 @@ This repository contains the complete implementation of a scalable, production-r
 - 7-day placement notification query optimization
 
 ### Stage 4: Performance Optimization ✅
+
 **File**: `STAGE_4_PERFORMANCE_OPTIMIZATION.md`
+
 - 5-tier solution for database overwhelm
 - Redis caching layer (90% hit rate, 5-10ms response)
 - Read replicas with HAProxy load balancing
@@ -43,7 +51,9 @@ This repository contains the complete implementation of a scalable, production-r
 - Result: 95% DB load reduction, <50ms average response time
 
 ### Stage 5: Reliable Bulk Notifications ✅
+
 **File**: `STAGE_5_RELIABLE_BULK_NOTIFICATIONS.md`
+
 - Problem: 200/50,000 failures in bulk notify_all operation
 - Solution: Celery message queue with exponential backoff
 - 3 async tasks: send_email, save_to_db, push_to_app
@@ -52,7 +62,9 @@ This repository contains the complete implementation of a scalable, production-r
 - Result: 99.9% delivery rate, <1s API response
 
 ### Stage 6: Priority Inbox Implementation ✅
+
 **File**: `STAGE_6_PRIORITY_INBOX.md`
+
 - Priority algorithm: (Type×0.5) + (Recency×0.3) + (Engagement×0.2)
 - Type weights: Placement (100) > Result (80) > Event (60)
 - Implementations in 3 languages: TypeScript, Python, Go
@@ -61,7 +73,9 @@ This repository contains the complete implementation of a scalable, production-r
 - Test cases included
 
 ### Stage 7: React/Next.js Frontend ✅
+
 **File**: `STAGE_7_REACT_FRONTEND.md`
+
 - Next.js 14 with TypeScript
 - Material UI components (not ShadCN/CSS libraries)
 - SWR for data fetching + Zustand for state
@@ -127,40 +141,44 @@ This repository contains the complete implementation of a scalable, production-r
 
 ## 📊 Key Metrics & Performance
 
-| Metric | Value |
-|--------|-------|
-| **Query Performance** | 50-100ms (20-100x improvement) |
-| **Database Load** | 95% reduction with caching |
-| **Cache Hit Rate** | 90% with Redis |
-| **API Response Time** | <50ms average |
-| **Bulk Notification** | <1s response, 99.9% delivery |
-| **Concurrent Users** | 50,000+ supported |
-| **Uptime SLA** | 99.9% |
-| **Data Volume** | 5M+ notifications, 250GB storage |
+| Metric                | Value                            |
+| --------------------- | -------------------------------- |
+| **Query Performance** | 50-100ms (20-100x improvement)   |
+| **Database Load**     | 95% reduction with caching       |
+| **Cache Hit Rate**    | 90% with Redis                   |
+| **API Response Time** | <50ms average                    |
+| **Bulk Notification** | <1s response, 99.9% delivery     |
+| **Concurrent Users**  | 50,000+ supported                |
+| **Uptime SLA**        | 99.9%                            |
+| **Data Volume**       | 5M+ notifications, 250GB storage |
 
 ---
 
 ## 🔑 Key Design Decisions
 
 ### Database Selection: PostgreSQL
+
 ✅ ACID compliance for data consistency  
 ✅ JSON support for flexible metadata  
 ✅ Advanced indexing capabilities  
 ✅ Proven at scale with proven battle-tested reliability
 
 ### Caching Strategy: Redis
+
 ✅ 90% hit rate on recent notifications  
 ✅ 5-10ms response time vs 200-500ms from DB  
 ✅ 24-hour TTL for cache expiry  
 ✅ Automatic invalidation on updates
 
 ### Bulk Operations: Celery + Message Queue
+
 ✅ Asynchronous processing (non-blocking)  
 ✅ Automatic retries with exponential backoff  
 ✅ Batch processing to prevent queue overflow  
 ✅ 99.9% delivery guarantee
 
 ### Priority Algorithm: Weighted Scoring
+
 ✅ Type weight (50%): Placement > Result > Event  
 ✅ Recency (30%): Recent notifications prioritized  
 ✅ Engagement (20%): Unread notifications boost  
@@ -188,6 +206,7 @@ AffordMed/
 ## 🚀 Getting Started
 
 ### Backend Setup
+
 ```bash
 # Install dependencies
 pip install celery flask sqlalchemy redis
@@ -203,6 +222,7 @@ python app.py
 ```
 
 ### Frontend Setup
+
 ```bash
 # Create Next.js app
 npx create-next-app@latest --typescript --tailwind
@@ -220,15 +240,15 @@ npm run dev
 
 ## 📈 Scalability Path
 
-| Phase | Action | Result |
-|-------|--------|--------|
-| Phase 1 | Implement basic REST API | Functional baseline |
-| Phase 2 | Add PostgreSQL + 8 indexes | 20x query improvement |
-| Phase 3 | Deploy Redis cache | 95% DB load reduction |
-| Phase 4 | Setup read replicas | Handle 50K concurrent |
-| Phase 5 | Implement Celery tasks | 99.9% delivery guarantee |
-| Phase 6 | Deploy Priority Inbox | Smart notification ranking |
-| Phase 7 | Launch React frontend | Production-ready UI |
+| Phase   | Action                     | Result                     |
+| ------- | -------------------------- | -------------------------- |
+| Phase 1 | Implement basic REST API   | Functional baseline        |
+| Phase 2 | Add PostgreSQL + 8 indexes | 20x query improvement      |
+| Phase 3 | Deploy Redis cache         | 95% DB load reduction      |
+| Phase 4 | Setup read replicas        | Handle 50K concurrent      |
+| Phase 5 | Implement Celery tasks     | 99.9% delivery guarantee   |
+| Phase 6 | Deploy Priority Inbox      | Smart notification ranking |
+| Phase 7 | Launch React frontend      | Production-ready UI        |
 
 ---
 
@@ -260,6 +280,7 @@ WebSocket connections: 10,000 concurrent per server
 ## 🧪 Testing Strategy
 
 ### Unit Tests
+
 ```
 - Priority scoring algorithm
 - Query optimization validations
@@ -267,6 +288,7 @@ WebSocket connections: 10,000 concurrent per server
 ```
 
 ### Integration Tests
+
 ```
 - Database transaction handling
 - Cache invalidation workflows
@@ -274,6 +296,7 @@ WebSocket connections: 10,000 concurrent per server
 ```
 
 ### Load Tests
+
 ```
 - 50,000 concurrent user simulation
 - Database query under load
@@ -285,6 +308,7 @@ WebSocket connections: 10,000 concurrent per server
 ## 📚 Documentation
 
 Each stage includes:
+
 - Problem analysis
 - Solution design
 - Code implementations
@@ -307,6 +331,7 @@ fc76b09 - Stage 4: Performance Optimization
 ```
 
 Each commit represents a completed deliverable with:
+
 - Detailed implementation
 - Code examples
 - Performance analysis
@@ -329,6 +354,7 @@ Each commit represents a completed deliverable with:
 ## 📞 Support & Questions
 
 For questions about specific stages, refer to the corresponding markdown file:
+
 - API Design Issues → `STAGE_1_REST_API_DESIGN.md`
 - Database Problems → `STAGE_2_DATABASE_SCHEMA.md`
 - Query Performance → `STAGE_3_QUERY_OPTIMIZATION.md`

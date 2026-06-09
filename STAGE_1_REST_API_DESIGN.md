@@ -13,9 +13,11 @@
 ## REST API Endpoints
 
 ### Create Notification
+
 **POST /api/notifications**
 
 Request:
+
 ```json
 {
   "userId": "user_123",
@@ -29,6 +31,7 @@ Request:
 ```
 
 Response (201):
+
 ```json
 {
   "success": true,
@@ -44,9 +47,11 @@ Response (201):
 ```
 
 ### Get All Notifications
+
 **GET /api/notifications?page=1&limit=20&isRead=false&category=appointment**
 
 Response (200):
+
 ```json
 {
   "success": true,
@@ -64,21 +69,27 @@ Response (200):
 ```
 
 ### Get Notification by ID
+
 **GET /api/notifications/:notificationId**
 
 ### Mark as Read
+
 **PATCH /api/notifications/:notificationId/read**
 
 ### Delete Notification
+
 **DELETE /api/notifications/:notificationId**
 
 ### Get Preferences
+
 **GET /api/notifications/preferences**
 
 ### Update Preferences
+
 **PATCH /api/notifications/preferences**
 
 ### Statistics
+
 **GET /api/notifications/stats**
 
 ## WebSocket Events
