@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import io, { Socket } from 'socket.io-client';
+import { Log } from 'logging-middleware';
 
 const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:5000';
 
@@ -18,14 +19,14 @@ export const useWebSocket = (userId: string) => {
     });
 
     newSocket.on('connect', () => {
-      console.log('Socket connected');
       newSocket.emit('join_user', userId);
       setIsConnected(true);
+      Log('frontend', 'info', 'hook', `WebSocket connected for user ${userId}`);
     });
 
     newSocket.on('disconnect', () => {
-      console.log('Socket disconnected');
       setIsConnected(false);
+      Log('frontend', 'warn', 'hook', `WebSocket disconnected for user ${userId}`);
     });
 
     setSocket(newSocket);

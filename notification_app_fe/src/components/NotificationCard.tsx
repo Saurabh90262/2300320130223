@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card, CardContent, Typography, Box, Chip, LinearProgress } from '@mui/material';
+import { Log } from 'logging-middleware';
 import { Notification } from '../types';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -25,6 +26,15 @@ export const NotificationCard: React.FC<NotificationCardProps> = ({
     important: '#FF9800',
     normal: '#9C27B0',
   };
+
+  useEffect(() => {
+    Log(
+      'frontend',
+      'debug',
+      'component',
+      `Rendered notification card id=${notification._id} type=${notification.type}`,
+    );
+  }, [notification._id, notification.type]);
 
   return (
     <Card sx={{ mb: 2, opacity: notification.read ? 0.6 : 1 }}>

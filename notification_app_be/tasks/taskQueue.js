@@ -1,18 +1,25 @@
-// Celery-like task queue for Node.js
-// In production, use Bull Queue or Celery via Python
-
 const Notification = require("../models/Notification");
 const User = require("../models/User");
+const { Log } = require("logging-middleware");
 
 class TaskQueue {
   constructor() {
     this.tasks = [];
     this.processing = false;
     this.maxRetries = 3;
-    this.backoffMultiplier = 5; // exponential backoff: 5s, 25s, 125s
+    this.backoffMultiplier = 5;
+    this.io = null;
+    this.redis = null;
   }
 
-  // Add task to queue
+  setIo(io) {
+    this.io = io;
+  }
+
+  setRedis(redis) {
+    this.redis = redis;
+  }
+
   async enqueueTask(taskType, payload, retries = 0) {
     const task = {
       id: Date.now() + Math.random(),
@@ -24,11 +31,16 @@ class TaskQueue {
     };
 
     this.tasks.push(task);
+    Log(
+      "backend",
+      "info",
+      "cron_job",
+      `Enqueued task type=${taskType} id=${task.id}`,
+    );
     this.processTasks();
     return task.id;
   }
 
-  // Process queued tasks
   async processTasks() {
     if (this.processing || this.tasks.length === 0) return;
 
@@ -41,38 +53,41 @@ class TaskQueue {
         task.status = "processing";
 
         switch (task.type) {
-          case "send_email":
-            await this.sendEmailTask(task.payload);
-            break;
-          case "save_to_db":
-            await this.saveToDbTask(task.payload);
-            break;
-          case "push_to_app":
-            await this.pushToAppTask(task.payload);
-            break;
           case "notify_all":
             await this.notifyAllTask(task.payload);
             break;
+          default:
+            throw new Error(`Unknown task type: ${task.type}`);
         }
 
         task.status = "completed";
-        console.log(`✅ Task ${task.id} completed`);
+        Log(
+          "backend",
+          "info",
+          "cron_job",
+          `Task ${task.id} completed successfully`,
+        );
       } catch (error) {
         task.status = "failed";
         task.error = error.message;
+        Log(
+          "backend",
+          "error",
+          "cron_job",
+          `Task ${task.id} failed: ${error.message}`,
+        );
 
         if (task.retries < this.maxRetries) {
-          const delay = this.backoffMultiplier ** (task.retries + 1) * 1000; // exponential backoff
-          console.log(
-            `⏰ Retrying task ${task.id} in ${delay}ms (attempt ${task.retries + 1})`,
-          );
-
+          const delay = this.backoffMultiplier ** (task.retries + 1) * 1000;
           setTimeout(() => {
             this.enqueueTask(task.type, task.payload, task.retries + 1);
           }, delay);
         } else {
-          console.error(
-            `❌ Task ${task.id} failed after ${this.maxRetries} retries: ${error.message}`,
+          Log(
+            "backend",
+            "fatal",
+            "cron_job",
+            `Task ${task.id} failed after ${this.maxRetries} retries`,
           );
         }
       }
@@ -81,39 +96,6 @@ class TaskQueue {
     this.processing = false;
   }
 
-  // Task: Send email
-  async sendEmailTask(payload) {
-    const { to, subject, message } = payload;
-    // In production, integrate with email service (SendGrid, AWS SES, etc.)
-    console.log(`📧 Sending email to ${to}: ${subject}`);
-    // Simulate email sending
-    await new Promise((resolve) => setTimeout(resolve, 100));
-  }
-
-  // Task: Save to database
-  async saveToDbTask(payload) {
-    const { userId, type, title, message, metadata } = payload;
-    const notification = new Notification({
-      userId,
-      type,
-      title,
-      message,
-      metadata,
-      read: false,
-    });
-    await notification.save();
-    console.log(`💾 Saved notification for user ${userId}`);
-  }
-
-  // Task: Push notification to app
-  async pushToAppTask(payload) {
-    const { userId, notification } = payload;
-    // In production, integrate with push service (Firebase Cloud Messaging, APNs, etc.)
-    console.log(`🔔 Pushing notification to app for user ${userId}`);
-    await new Promise((resolve) => setTimeout(resolve, 50));
-  }
-
-  // Task: Notify all users in batches
   async notifyAllTask(payload) {
     const {
       userIds,
@@ -123,7 +105,13 @@ class TaskQueue {
       metadata,
       batchSize = 100,
     } = payload;
-    console.log(`📢 Starting bulk notification to ${userIds.length} users`);
+
+    Log(
+      "backend",
+      "info",
+      "cron_job",
+      `Starting bulk notification for ${userIds.length} users`,
+    );
 
     for (let i = 0; i < userIds.length; i += batchSize) {
       const batch = userIds.slice(i, i + batchSize);
@@ -138,21 +126,35 @@ class TaskQueue {
       }));
 
       await Notification.insertMany(notifications);
-      console.log(
-        `✅ Batch ${Math.ceil(i / batchSize) + 1}: Created ${batch.length} notifications`,
-      );
 
-      // Update unread counts
       for (const userId of batch) {
         await User.updateOne({ _id: userId }, { $inc: { unreadCount: 1 } });
-      }
-    }
 
-    console.log(`🎉 Bulk notification completed for ${userIds.length} users`);
+        if (this.redis) {
+          await this.redis.del(`notifications:${userId}:*`);
+          await this.redis.del(`priority:${userId}:*`);
+        }
+
+        if (this.io) {
+          this.io.to(`user_${userId}`).emit("notification:new", {
+            type,
+            title,
+            message,
+            createdAt: new Date(),
+          });
+        }
+      }
+
+      Log(
+        "backend",
+        "info",
+        "cron_job",
+        `Processed batch ${Math.floor(i / batchSize) + 1} with ${batch.length} users`,
+      );
+    }
   }
 }
 
-// Singleton instance
 const taskQueue = new TaskQueue();
 
 module.exports = taskQueue;

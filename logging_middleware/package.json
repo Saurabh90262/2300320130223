@@ -1,8 +1,9 @@
 {
   "name": "logging-middleware",
   "version": "1.0.0",
-  "description": "Express request logging middleware",
+  "description": "Reusable logging package for evaluation service integration",
   "main": "index.js",
-  "keywords": ["express", "middleware", "logging"],
+  "types": "index.d.ts",
+  "keywords": ["logging", "middleware"],
   "license": "MIT"
 }

@@ -3,35 +3,35 @@ version: "3.8"
 services:
   mongodb:
     image: mongo:latest
-    container_name: affordmed-mongo
+    container_name: notification-mongo
     ports:
       - "27017:27017"
     environment:
-      MONGO_INITDB_DATABASE: affordmed
+      MONGO_INITDB_DATABASE: notifications
     volumes:
       - mongodb_data:/data/db
     networks:
-      - affordmed-network
+      - notification-network
 
   redis:
     image: redis:latest
-    container_name: affordmed-redis
+    container_name: notification-redis
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
     networks:
-      - affordmed-network
+      - notification-network
 
   backend:
     build:
-      context: ./notification_app_be
-      dockerfile: Dockerfile
-    container_name: affordmed-backend
+      context: .
+      dockerfile: notification_app_be/Dockerfile
+    container_name: notification-backend
     ports:
       - "5000:5000"
     environment:
-      MONGO_URI: mongodb://mongodb:27017/affordmed
+      MONGO_URI: mongodb://mongodb:27017/notifications
       REDIS_HOST: redis
       REDIS_PORT: 6379
       JWT_SECRET: your-secret-key-change-in-production
@@ -41,13 +41,13 @@ services:
       - mongodb
       - redis
     networks:
-      - affordmed-network
+      - notification-network
 
   frontend:
     build:
-      context: ./notification_app_fe
-      dockerfile: Dockerfile
-    container_name: affordmed-frontend
+      context: .
+      dockerfile: notification_app_fe/Dockerfile
+    container_name: notification-frontend
     ports:
       - "3000:3000"
     environment:
@@ -56,12 +56,12 @@ services:
     depends_on:
       - backend
     networks:
-      - affordmed-network
+      - notification-network
 
 volumes:
   mongodb_data:
   redis_data:
 
 networks:
-  affordmed-network:
+  notification-network:
     driver: bridge

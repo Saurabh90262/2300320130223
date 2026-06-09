@@ -1,7 +1,7 @@
 {
-  "name": "affordmed-notification-backend",
+  "name": "notification-app-backend",
   "version": "1.0.0",
-  "description": "AffordMed Notification System Backend",
+  "description": "College notification system backend API",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -9,10 +9,11 @@
     "test": "jest",
     "seed": "node scripts/seed.js"
   },
-  "keywords": ["notifications", "healthcare", "affordmed"],
+  "keywords": ["notifications", "college", "api"],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "logging-middleware": "file:../logging_middleware",
     "express": "^4.18.2",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",

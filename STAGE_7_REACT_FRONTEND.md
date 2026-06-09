@@ -489,7 +489,7 @@ export default function HomePage() {
   return (
     <Container maxWidth="md" sx={{ py: 6 }}>
       <Paper elevation={3} sx={{ p: 4, textAlign: 'center' }}>
-        <h1>AffordMed Notifications</h1>
+        <h1>College Notifications</h1>
         <p style={{ fontSize: '1.2em', color: '#666', marginBottom: 32 }}>
           Stay updated with your medical appointments, prescriptions, and important alerts
         </p>

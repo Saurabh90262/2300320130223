@@ -1,15 +1,20 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box, Container, Typography, Button, Card, CardContent } from '@mui/material';
 import Link from 'next/link';
+import { Log } from 'logging-middleware';
 import { Layout } from '../components/Layout';
 
 export default function Home() {
+  useEffect(() => {
+    Log('frontend', 'info', 'page', 'Home page loaded');
+  }, []);
+
   return (
     <Layout>
       <Container maxWidth="lg">
         <Box sx={{ py: 8 }}>
           <Typography variant="h3" sx={{ mb: 2, fontWeight: 'bold' }}>
-            🏥 Welcome to AffordMed Notifications
+            College Notification Portal
           </Typography>
           <Typography variant="h6" color="textSecondary" sx={{ mb: 4 }}>
             Stay updated with your placement status, exam results, and campus events

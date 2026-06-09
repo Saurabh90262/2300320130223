@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Log } from 'logging-middleware';
 import { Container, Box, Card, CardContent, Typography, Switch, FormControlLabel, Button, Alert } from '@mui/material';
 import { notificationAPI } from '../services/api';
 import { useNotificationStore } from '../store/notificationStore';
@@ -13,6 +14,7 @@ export default function SettingsPage() {
 
   useEffect(() => {
     if (!userId) return;
+    Log('frontend', 'info', 'page', `Settings page loaded for user ${userId}`);
     loadPreferences();
   }, [userId]);
 

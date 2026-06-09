@@ -2,6 +2,7 @@ const Notification = require("../models/Notification");
 const User = require("../models/User");
 const NotificationPreference = require("../models/NotificationPreference");
 const { v4: uuidv4 } = require("uuid");
+const { Log } = require("logging-middleware");
 
 // GET all notifications for a user with pagination
 exports.getNotifications = async (req, res) => {
@@ -10,6 +11,13 @@ exports.getNotifications = async (req, res) => {
   const redis = req.app.locals.redis;
 
   try {
+    Log(
+      "backend",
+      "info",
+      "controller",
+      `Fetching notifications for userId=${userId} page=${page}`,
+    );
+
     // Try cache first
     const cacheKey = `notifications:${userId}:${page}:${read}:${type}`;
     const cached = await redis.get(cacheKey);
@@ -224,50 +232,48 @@ exports.deleteNotification = async (req, res) => {
   }
 };
 
-// POST bulk create notifications (Stage 5)
+// POST bulk create notifications (Stage 5) — queued with retries
 exports.bulkCreateNotifications = async (req, res) => {
   const { userIds, type, title, message, metadata } = req.body;
-  const redis = req.app.locals.redis;
-  const io = req.app.locals.io;
+  const taskQueue = require("../tasks/taskQueue");
 
   try {
-    const notifications = userIds.map((userId) => ({
-      _id: uuidv4(),
-      userId,
+    if (!userIds?.length) {
+      return res
+        .status(400)
+        .json({ success: false, message: "userIds array is required" });
+    }
+
+    Log(
+      "backend",
+      "info",
+      "controller",
+      `Queuing bulk notification for ${userIds.length} users type=${type}`,
+    );
+
+    const taskId = await taskQueue.enqueueTask("notify_all", {
+      userIds,
       type,
       title,
       message,
       metadata,
-      read: false,
-    }));
+    });
 
-    await Notification.insertMany(notifications, { ordered: false });
-
-    // Invalidate caches for all users
-    for (const userId of userIds) {
-      await redis.del(`notifications:${userId}:*`);
-      await redis.del(`priority:${userId}:*`);
-
-      // Emit real-time event
-      io.to(`user_${userId}`).emit("notification:new", {
-        type,
-        title,
-        message,
-        createdAt: new Date(),
-      });
-
-      // Increment unread count
-      await User.updateOne({ _id: userId }, { $inc: { unreadCount: 1 } });
-    }
-
-    res.status(201).json({
+    res.status(202).json({
       success: true,
       data: {
-        created: notifications.length,
-        message: `Successfully sent to ${notifications.length} users`,
+        taskId,
+        queued: userIds.length,
+        message: `Bulk send queued for ${userIds.length} users`,
       },
     });
   } catch (error) {
+    Log(
+      "backend",
+      "error",
+      "controller",
+      `Bulk notification queue failed: ${error.message}`,
+    );
     res.status(400).json({ success: false, message: error.message });
   }
 };

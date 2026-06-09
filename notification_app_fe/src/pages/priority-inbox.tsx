@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { Log } from 'logging-middleware';
 import { Container, Box, CircularProgress, Grid, Card, CardContent, Typography } from '@mui/material';
-import useSWR from 'swr';
+import useSWR, { mutate } from 'swr';
 import { notificationAPI } from '../services/api';
 import { useNotificationStore } from '../store/notificationStore';
 import { NotificationCard } from '../components/NotificationCard';
@@ -12,6 +13,12 @@ export default function PriorityInboxPage() {
   const user = useNotificationStore(state => state.user);
   const userId = user?._id || '';
   const [notifications, setNotifications] = useState<Notification[]>([]);
+
+  useEffect(() => {
+    if (userId) {
+      Log('frontend', 'info', 'page', `Priority inbox loaded for user ${userId}`);
+    }
+  }, [userId]);
 
   const { data, isLoading } = useSWR(
     userId ? `/priority/${userId}` : null,

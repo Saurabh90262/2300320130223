@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const jwt = require("jwt-simple");
 const { v4: uuidv4 } = require("uuid");
+const { Log } = require("logging-middleware");
 
 const SECRET_KEY =
   process.env.JWT_SECRET || "your-secret-key-change-in-production";
@@ -27,6 +28,8 @@ exports.register = async (req, res) => {
     });
 
     await user.save();
+
+    Log("backend", "info", "controller", `New user registered: ${email}`);
 
     const token = jwt.encode(
       { userId: user._id, email: user.email },
@@ -73,6 +76,8 @@ exports.login = async (req, res) => {
     user.lastLogin = new Date();
     await user.save();
 
+    Log("backend", "info", "controller", `User logged in: ${email}`);
+
     const token = jwt.encode(
       { userId: user._id, email: user.email },
       SECRET_KEY,
@@ -92,6 +97,7 @@ exports.login = async (req, res) => {
       },
     });
   } catch (error) {
+    Log("backend", "error", "controller", `Login failed: ${error.message}`);
     res.status(400).json({ success: false, message: error.message });
   }
 };

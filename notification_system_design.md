@@ -2,7 +2,7 @@
 
 ## Overview
 
-This comprehensive document outlines all 7 stages of implementing a scalable notification system for the AffordMed platform. The system provides real-time notifications to users upon login and supports multiple notification types including medical reminders, appointment updates, and prescription alerts.
+This comprehensive document outlines all 7 stages of implementing a scalable notification system for the College Notification Platform platform. The system provides real-time notifications to users upon login and supports multiple notification types including medical reminders, appointment updates, and prescription alerts.
 
 ---
 
@@ -757,7 +757,7 @@ The notification system supports the following core actions:
 
 #### Connection Setup
 
-**URL:** `wss://api.affordmed.com/notifications/ws`
+**URL:** `wss://api.example.com/notifications/ws`
 
 **Headers:**
 
@@ -2606,7 +2606,7 @@ export default function HomePage() {
   return (
     <Container maxWidth="md" sx={{ py: 6 }}>
       <Paper elevation={3} sx={{ p: 4, textAlign: 'center' }}>
-        <h1>AffordMed Notifications</h1>
+        <h1>College Notification Platform Notifications</h1>
         <p style={{ fontSize: '1.2em', color: '#666', marginBottom: 32 }}>
           Stay updated with your medical appointments, prescriptions, and important alerts
         </p>

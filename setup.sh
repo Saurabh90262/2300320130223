@@ -6,7 +6,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-echo -e "${YELLOW}🚀 AffordMed Notification System - Setup${NC}"
+echo -e "${YELLOW}College Notification System - Setup${NC}"
 
 # Check Node.js
 if ! command -v node &> /dev/null; then

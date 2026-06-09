@@ -3,7 +3,7 @@ REM Colors using FINDSTR for visualization
 REM Colors: 1=Blue, 2=Green, 3=Cyan, 4=Red, 5=Purple, 6=Yellow, 7=White, 8=Gray
 
 echo.
-echo === AffordMed Notification System - Setup ===
+echo === College Notification System - Setup ===
 echo.
 
 REM Check Node.js

@@ -1,7 +1,22 @@
 import React, { ReactNode } from 'react';
-import { Box, AppBar, Toolbar, Typography, Badge, IconButton, Drawer, List, ListItem, ListItemText, Divider } from '@mui/material';
+import {
+  Box,
+  AppBar,
+  Toolbar,
+  Typography,
+  Badge,
+  IconButton,
+  Drawer,
+  List,
+  ListItem,
+  ListItemText,
+  Divider,
+  Button,
+} from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { Log } from 'logging-middleware';
 import { useNotificationStore } from '../store/notificationStore';
 
 interface LayoutProps {
@@ -9,9 +24,11 @@ interface LayoutProps {
 }
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
-  const unreadCount = useNotificationStore(state => state.unreadCount);
-  const user = useNotificationStore(state => state.user);
+  const unreadCount = useNotificationStore((state) => state.unreadCount);
+  const user = useNotificationStore((state) => state.user);
+  const setUser = useNotificationStore((state) => state.setUser);
 
   const menuItems = [
     { label: 'Home', href: '/' },
@@ -20,13 +37,20 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
     { label: 'Settings', href: '/settings' },
   ];
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUser(null);
+    Log('frontend', 'info', 'auth', 'User logged out');
+    router.push('/login');
+  };
+
   return (
     <Box sx={{ display: 'flex' }}>
-      {/* AppBar */}
       <AppBar position="fixed">
         <Toolbar>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            🏥 AffordMed
+            College Notifications
           </Typography>
           <Link href="/notifications">
             <IconButton color="inherit">
@@ -35,18 +59,22 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
               </Badge>
             </IconButton>
           </Link>
-          <Typography variant="body2" sx={{ ml: 2 }}>
-            {user?.name || 'User'}
+          <Typography variant="body2" sx={{ ml: 2, mr: 2 }}>
+            {user?.name || 'Guest'}
           </Typography>
+          {user ? (
+            <Button color="inherit" onClick={handleLogout}>
+              Logout
+            </Button>
+          ) : (
+            <Link href="/login">
+              <Button color="inherit">Login</Button>
+            </Link>
+          )}
         </Toolbar>
       </AppBar>
 
-      {/* Sidebar */}
-      <Drawer
-        anchor="left"
-        open={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-      >
+      <Drawer anchor="left" open={sidebarOpen} onClose={() => setSidebarOpen(false)}>
         <Box sx={{ width: 250 }}>
           <List>
             {menuItems.map((item, idx) => (
@@ -63,10 +91,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         </Box>
       </Drawer>
 
-      {/* Main Content */}
-      <Box sx={{ flexGrow: 1, mt: 8, p: 2 }}>
-        {children}
-      </Box>
+      <Box sx={{ flexGrow: 1, mt: 8, p: 2 }}>{children}</Box>
     </Box>
   );
 };

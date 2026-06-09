@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { Log } from 'logging-middleware';
 import { Notification, User, NotificationPreferences, ApiResponse } from '../types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
@@ -16,6 +17,12 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  Log(
+    'frontend',
+    'debug',
+    'middleware',
+    `API request ${config.method?.toUpperCase()} ${config.url}`,
+  );
   return config;
 });
 

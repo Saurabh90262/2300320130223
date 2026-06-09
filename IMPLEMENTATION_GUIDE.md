@@ -1,4 +1,4 @@
-# AffordMed Notification System
+# College Notification System
 
 A full-stack notification system for college. Handles placement updates, exam results, and campus events. Built with Node.js, React, and MongoDB.
 
@@ -18,7 +18,7 @@ npm install
 cp .env.example .env
 
 # Update .env with your settings:
-# MONGO_URI=mongodb://localhost:27017/affordmed
+# MONGO_URI=mongodb://localhost:27017/notifications
 # REDIS_HOST=localhost
 # JWT_SECRET=your-secret
 
@@ -119,7 +119,7 @@ Real-time: WebSocket
 Backend `.env`:
 
 ```
-MONGO_URI=mongodb://localhost:27017/affordmed
+MONGO_URI=mongodb://localhost:27017/notifications
 REDIS_HOST=localhost
 REDIS_PORT=6379
 JWT_SECRET=secret-key

@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { Log } from 'logging-middleware';
 import { Notification, User, NotificationPreferences } from '../types';
 
 interface NotificationStore {
@@ -47,7 +48,15 @@ export const useNotificationStore = create<NotificationStore>((set, get) => ({
   setPriorityNotifications: (priorityNotifications) => set({ priorityNotifications }),
   setUnreadCount: (unreadCount) => set({ unreadCount }),
   setFilter: (filter) => set({ filter }),
-  setUser: (user) => set({ user }),
+  setUser: (user) => {
+    Log(
+      'frontend',
+      'info',
+      'state',
+      user ? `User session set: ${user.email}` : 'User session cleared',
+    );
+    set({ user });
+  },
   setPreferences: (preferences) => set({ preferences }),
   setLoading: (loading) => set({ loading }),
   setError: (error) => set({ error }),

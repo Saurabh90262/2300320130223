@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Log } from 'logging-middleware';
 import { Container, Box, Pagination, Select, MenuItem, FormControl, InputLabel, CircularProgress } from '@mui/material';
 import useSWR, { mutate } from 'swr';
 import { notificationAPI } from '../services/api';
@@ -13,6 +14,12 @@ export default function NotificationsPage() {
   const [readFilter, setReadFilter] = useState('');
   const user = useNotificationStore(state => state.user);
   const userId = user?._id || '';
+
+  useEffect(() => {
+    if (userId) {
+      Log('frontend', 'info', 'page', `Notifications page loaded for user ${userId}`);
+    }
+  }, [userId]);
 
   const { data, isLoading, error } = useSWR(
     userId ? [`/notifications/${userId}`, page, typeFilter, readFilter] : null,
