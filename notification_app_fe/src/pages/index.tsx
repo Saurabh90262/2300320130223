@@ -71,7 +71,7 @@ export default function Home() {
                 <li>✅ Real-time notifications via WebSocket</li>
                 <li>✅ Smart priority ranking algorithm</li>
                 <li>✅ Bulk notification delivery (99.9% guarantee)</li>
-                <li>✅ Advanced caching for <50ms response time</li>
+                <li>✅ Advanced caching for under 50ms response time</li>
                 <li>✅ Customizable notification preferences</li>
                 <li>✅ Read/unread tracking with visual indicators</li>
               </ul>

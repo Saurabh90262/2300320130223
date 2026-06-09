@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "jsx": "preserve",
     "module": "ESNext",
     "moduleResolution": "bundler",
@@ -17,8 +21,13 @@
     "isolatedModules": true,
     "incremental": true,
     "allowSyntheticDefaultImports": true,
-    "skipLibCheck": true
+    "allowJs": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", ".next"]
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    ".next"
+  ]
 }
