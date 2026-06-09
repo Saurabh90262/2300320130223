@@ -1,24 +1,10 @@
-# Stage 2: Database Schema Design
+# Stage 2: Database Schema
 
-## Database Selection & Rationale
+We went with MongoDB (adapted from PostgreSQL for this project). Two main collections handle everything - notifications and user preferences.
 
-**Recommended: PostgreSQL (Relational Database)**
+The key insight was to not create indexes everywhere. Instead, we created just the right ones for our actual query patterns. We also added TTL (time-to-live) to clean up old notifications automatically.
 
-### Why PostgreSQL?
-
-1. **ACID Compliance**: Guarantees data consistency for critical operations
-2. **JSON Support**: Native JSONB type for flexible metadata storage
-3. **Advanced Indexing**: Supports partial, expression-based, and GIN indexes
-4. **Scalability**: Handles millions of records efficiently with proper indexing
-5. **Proven Track Record**: Battle-tested for notification systems at scale
-6. **Cost-Effective**: Open-source and cloud-friendly
-
-### Scalability Considerations
-
-- **Data Volume**: With 50,000 students × 5,000,000 notifications = 250 billion potential
-- **Query Patterns**: Heavy read operations (notifications fetched on every page load)
-- **Storage**: ~250GB for full dataset at 1KB per notification
-- **Challenges**: Efficient pagination, preventing table scans, maintaining query performance
+With 50,000 students potentially creating millions of notifications, we needed to think about scale from day one.
 
 ## Database Schema
 

@@ -1,109 +1,59 @@
-# Stage 1: REST API Design for Notification System
+# Stage 1: REST API Design
 
-## Core Actions Supported
+This is the foundation of our notification system. We needed to design a clean API that could handle all the core operations users need - sending notifications, checking them, updating preferences, and getting real-time updates.
 
-1. **Create Notification** - Send new notifications to users
-2. **Retrieve Notifications** - Fetch user notifications with filtering and pagination
-3. **Mark as Read** - Update notification read status
-4. **Delete Notification** - Remove notifications
-5. **Get Notification Preferences** - Retrieve user notification settings
-6. **Update Notification Preferences** - Modify notification delivery preferences
-7. **Get Real-time Updates** - WebSocket connection for live notifications
+## What We're Building
 
-## REST API Endpoints
+The API handles these main operations:
 
-### Create Notification
+- Sending notifications to users
+- Retrieving notifications with filters and pagination
+- Marking notifications as read
+- Deleting old notifications
+- Managing user notification preferences
+- Real-time updates via WebSocket
 
-**POST /api/notifications**
+## The Endpoints
 
-Request:
+**POST /api/notifications** - Create a new notification
 
-```json
-{
-  "userId": "user_123",
-  "type": "appointment_reminder",
-  "title": "Appointment Reminder",
-  "message": "Your appointment is scheduled for tomorrow at 2:00 PM",
-  "priority": "high",
-  "category": "appointment",
-  "channels": ["email", "in-app", "sms"]
-}
-```
+Send a notification to a user. You pass the user ID, notification type (placement, result, or event), title, message, and any extra metadata.
 
-Response (201):
+**GET /api/notifications/:userId** - Get all notifications
 
-```json
-{
-  "success": true,
-  "statusCode": 201,
-  "message": "Notification created successfully",
-  "data": {
-    "id": "notif_789",
-    "userId": "user_123",
-    "isRead": false,
-    "createdAt": "2026-06-09T12:30:00Z"
-  }
-}
-```
+Fetch all notifications for a user. Supports pagination and filtering by type and read status.
 
-### Get All Notifications
+**GET /api/notifications/:userId/priority/top** - Get top 10 notifications
 
-**GET /api/notifications?page=1&limit=20&isRead=false&category=appointment**
+Returns the user's most important notifications ranked by our priority algorithm.
 
-Response (200):
+**PATCH /api/notifications/:id/read** - Mark as read
 
-```json
-{
-  "success": true,
-  "statusCode": 200,
-  "data": {
-    "notifications": [...],
-    "pagination": {
-      "page": 1,
-      "limit": 20,
-      "total": 45,
-      "hasNextPage": true
-    }
-  }
-}
-```
+Toggle a notification's read status.
 
-### Get Notification by ID
+**DELETE /api/notifications/:id** - Delete a notification
 
-**GET /api/notifications/:notificationId**
+Remove a notification permanently.
 
-### Mark as Read
+**GET/PATCH /api/notifications/:userId/preferences** - Manage preferences
 
-**PATCH /api/notifications/:notificationId/read**
+Let users control what kinds of notifications they get and how often.
 
-### Delete Notification
+**POST /api/notifications/bulk/send** - Send to multiple users
 
-**DELETE /api/notifications/:notificationId**
+Batch operation for sending the same notification to many users at once.
 
-### Get Preferences
+## Real-time Updates
 
-**GET /api/notifications/preferences**
+We use WebSocket for live notifications. When something happens, the server immediately sends it to the connected client instead of making them poll the API constantly.
 
-### Update Preferences
-
-**PATCH /api/notifications/preferences**
-
-### Statistics
-
-**GET /api/notifications/stats**
-
-## WebSocket Events
+When a new notification arrives, the client receives:
 
 ```json
 {
   "event": "notification:new",
-  "data": {
-    "id": "notif_789",
-    "type": "appointment_reminder",
-    "title": "Appointment Reminder",
-    "message": "Your appointment is scheduled for tomorrow at 2:00 PM",
-    "priority": "high",
-    "createdAt": "2026-06-09T12:30:00Z"
-  }
+  "type": "placement",
+  "title": "Interview Scheduled",
+  "message": "You have an interview tomorrow at 10 AM"
 }
 ```
