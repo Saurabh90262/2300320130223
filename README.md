@@ -19,6 +19,7 @@ We built this incrementally over 7 stages, each solving a specific problem:
 Prerequisites: Node.js, MongoDB, Redis
 
 **Backend:**
+
 ```bash
 cd backend
 npm install
@@ -26,6 +27,7 @@ npm run dev
 ```
 
 **Frontend:**
+
 ```bash
 cd frontend
 npm install
