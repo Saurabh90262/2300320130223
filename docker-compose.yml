@@ -25,7 +25,7 @@ services:
 
   backend:
     build:
-      context: ./backend
+      context: ./notification_app_be
       dockerfile: Dockerfile
     container_name: affordmed-backend
     ports:
@@ -45,7 +45,7 @@ services:
 
   frontend:
     build:
-      context: ./frontend
+      context: ./notification_app_fe
       dockerfile: Dockerfile
     container_name: affordmed-frontend
     ports:

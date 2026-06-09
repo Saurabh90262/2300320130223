@@ -13,7 +13,7 @@ A full-stack notification system for college. Handles placement updates, exam re
 ### Backend
 
 ```bash
-cd backend
+cd notification_app_be
 npm install
 cp .env.example .env
 
@@ -32,7 +32,7 @@ Server runs on `http://localhost:5000`.
 In a new terminal:
 
 ```bash
-cd frontend
+cd notification_app_fe
 npm install
 cp .env.example .env
 npm run dev
@@ -152,8 +152,8 @@ Starts MongoDB, Redis, backend, and frontend.
 ## Testing
 
 ```bash
-cd backend && npm test
-cd frontend && npm test
+cd notification_app_be && npm test
+cd notification_app_fe && npm test
 ```
 
 ## What to Look At

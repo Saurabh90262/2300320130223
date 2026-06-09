@@ -21,7 +21,7 @@ Prerequisites: Node.js, MongoDB, Redis
 **Backend:**
 
 ```bash
-cd backend
+cd notification_app_be
 npm install
 npm run dev
 ```
@@ -29,7 +29,7 @@ npm run dev
 **Frontend:**
 
 ```bash
-cd frontend
+cd notification_app_fe
 npm install
 npm run dev
 ```
@@ -68,6 +68,13 @@ Each file digs into one specific problem and how we solved it.
 - Priority calculation finishes in <5ms
 
 ## Code Layout
+
+```
+logging_middleware/       # Standalone request logging middleware
+notification_app_be/        # Node.js/Express API
+notification_app_fe/        # React/Next.js frontend
+notification_system_design.md
+```
 
 Backend is organized the typical way: models (what data looks like), controllers (business logic), routes (the API).
 

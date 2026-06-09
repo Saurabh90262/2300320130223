@@ -19,7 +19,7 @@ echo [OK] Node.js found: %NODE_VERSION%
 REM Setup Backend
 echo.
 echo === Setting up Backend ===
-cd backend
+cd notification_app_be
 
 if not exist .env (
     copy .env.example .env
@@ -32,7 +32,7 @@ echo [OK] Backend dependencies installed
 REM Setup Frontend
 echo.
 echo === Setting up Frontend ===
-cd ..\frontend
+cd ..\notification_app_fe
 
 if not exist .env.local (
     copy .env.example .env.local
@@ -46,8 +46,8 @@ echo.
 echo === Next Steps ===
 echo 1. Start MongoDB: mongod
 echo 2. Start Redis: redis-server
-echo 3. Start Backend: cd backend ^&^& npm run dev
-echo 4. Start Frontend: cd frontend ^&^& npm run dev
+echo 3. Start Backend: cd notification_app_be ^&^& npm run dev
+echo 4. Start Frontend: cd notification_app_fe ^&^& npm run dev
 echo 5. Open browser: http://localhost:3000
 echo.
 echo [OK] Setup complete!
